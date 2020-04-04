@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculator</title>
+    <style>
+        table{
+            width: 450px;
+            height: 500px;
+        }
+        #ecran{
+            background-color: black;
+            color: #7f7;
+            text-align: right;
+            width: 100%;
+            box-sizing: border-box;
+            font-size: 2em;
+            padding: 6px;
+            height: 100%;
+        }
+        .btn{
+            width: 100%;
+            height: 100%;
+        }
+
+    </style>
+</head>
+<body>
+    <!-- On définit les inputs dont les types sont texte pour afficher les valeur entrées à travers les bouttons qui à leurs tours appellent la fonction
+    Calculer('groupe', valeur) qui nous permettera d'effectuer des opérations -->
+   <table border="1">
+       <tr>
+           <td colspan="5">
+               <input type="text" id="ecran" value="0" size="10" readonly>
+           </td>   
+       </tr>
+       <tr>
+           <td><button class="btn" onclick="calculer('ch' , 7)">7</button></td>
+           <td><button class="btn" onclick="calculer('ch' , 8)">8</button></td>
+           <td><button class="btn" onclick="calculer('ch' , 9)">9</button></td>
+           <td><button class="btn" onclick="calculer('sp' , 'c')">c</button></td>
+           <td><button class="btn" onclick="calculer('sp' , 'ce')">ce</button></td>
+       </tr>
+       <tr>
+           <td><button class="btn" onclick="calculer('ch' , 4)">4</button></td>
+           <td><button class="btn" onclick="calculer('ch' , 5)">5</button></td>
+           <td><button class="btn" onclick="calculer('ch' , 6)">6</button></td>
+           <td><button class="btn" onclick="calculer('op' , '+')">+</button></td>
+           <td><button class="btn" onclick="calculer('op' , '-')">-</button></td>
+       </tr>
+       <tr>
+           <td><button class="btn" onclick="calculer('ch' , 1)">1</button></td>
+           <td><button class="btn" onclick="calculer('ch' , 2)">2</button></td>
+           <td><button class="btn" onclick="calculer('ch' , 3)">3</button></td>
+           <td><button class="btn" onclick="calculer('op' , 'x')">x</button></td>
+           <td><button class="btn" onclick="calculer('op' , '/')">/</button></td>
+       </tr>
+       <tr>
+           <td colspan="2"><button class="btn" onclick="calculer('ch' , 0)">0</button></td>
+           <td><button class="btn" onclick="calculer('dec')">,</button></td>
+           <td colspan="2"><button class="btn" onclick="calculer('eg', '')">=</button></td>
+
+       </tr>
+
+   </table>
+   <script>
+       //On inititalise opérande 1 à 0 et on la définit comme variable globale
+       var operande1 = "0";
+       //On définit l'operande par défaut '+'
+       var operator = "+";
+       // Il s'agit d'une booléan qui nous permettera de tester quand est ce qu'il faudra effacer ce qui est à l'écran
+       var test = false;
+       function calculer(g, v){
+           var ecran = document.querySelector("#ecran"); // on récupére l'input de type texte qui nous permettera d'écrire dessus si on a des valeurs entrées.
+
+           if(g == 'ch'){           // On teste si le groupe s'agit d'un chiffre
+               if(test){
+                   ecran.value = "";  // on efface l'écran si l'on appuie sur un opérateur (variable booléene test définit a true si on appuie sur un opérateur)
+                   test = false;  // on remet la variable à false pour ne pas effacer si on appuie sur un chiffre
+               }
+                if(ecran.value == '0') {    //on efface la valeur par défaut su l'écran quand il est vide (0)
+                    ecran.value = "";
+                }
+                ecran.value += v; // Dans ce cas on concatene ce qui était dans écran (0) avec ce que l'utilisateur entre
+
+           }else if(g == 'dec'){
+               if(ecran.value.indexOf(".") == -1){ //dans le du groupe décimal virgule . On l'introduit à notre input s'il n'y en avait pas indexOf('ch') retourne -1 si elle ne trouver pas 'ch'
+               ecran.value += "."; // on ajoute virgule dans le cas où le test est positif
+            }
+               
+           }else if(g == 'op'){ // dans le cas du groupe operateur 
+               calculer('eg'); // on appelle la fonction calculer avec parametre 'eg '(égale) qui nous permettera de calculer plusieurs nombres sans avoir à toujours appuyer sur egale
+               operande1 = parseFloat(ecran.value); // on récupére l'ancienne opérande(cad après avoir introduit une deuxième)
+               operator = v; // on récupére le nouveau opérateur
+               test = true; // on met le test à true comme cité auparavant
+            }
+            else if(g == 'eg'){ // dans le cas ou on appuye sur egale
+                switch(operator){
+                    case '+':
+                        ecran.value =  parseFloat(operande1)+parseFloat(ecran.value); // on ajoute operande 1 à la nouvelle valeur de l'écran dans le cas de '+' et on affiche à l'ecran 
+                        break;
+                    case '-':
+                        ecran.value = operande1*1 - parseFloat(ecran.value);    // on soustrait operande 1 à la nouvelle valeur de l'écran dans le cas de '-' et on affiche à l'ecran
+                        break;
+                    case 'x':
+                        ecran.value = (operande1*1) * parseFloat(ecran.value); // on multiplie operande 1 à la nouvelle valeur de l'écran dans le cas de 'x' et on affiche à l'ecran
+                        break;
+                    case '/':
+                        ecran.value = operande1*1 / parseFloat(ecran.value); // on divise operande 1 à la nouvelle valeur de l'écran dans le cas de '/' et on affiche à l'ecran
+                        break;
+                }
+            }
+            else if(g == 'sp'){ // cas spéciaux 'sp' ce et c
+                if(v == 'c'){
+                    ecran.value = "0"; //dans le cas de c on efface uniquement ce qu'on avait sur l'ecran tout en gardant l'ancienne opérande
+                }
+                else{
+                    ecran.value= 0; // on efface ce qu'il y'a dans l'ecran
+                    operande1 = 0; // et ce qu'il y'avait.
+                }
+            }
+       }
+       //place à vos machines à calculer.
+   </script> 
+</body>
+</html>
